@@ -3,73 +3,153 @@ package com.softdesign.school.school_softdesign.utils;
 import android.util.Log;
 
 /**
- * Created by Максим on 24.01.2016.
+ * Обертка для стандартного {@link android.util.Log}.
+ * Позволяет указывать префикс для тега, форматировать вывод сообщений
+ * (смотреть {@link #helper(Integer, String, String)}).
  */
 public class Lg {
 
     /**
-     * Зарефакторить код логера в соответствии с данными на лекции рекомендациями, исспользовать подход DRY Don’t repeat yourself (не повторяй себя) -
-     * т.е. избегаем повторения уже ранее написанного кода + Javadoc,
-     * логер должен исспользовать различные уровни вывода логов (Verbose, debug, info, error, warn, assert ).
+     * Префикс сообщений в логе.
      */
+    private static final String PREFIX = "SCHOOL ";
 
-
-    private static final String PREFIX = "HTC ";
+    /**
+     * Максимальная длина логгируемого сообщения.
+     * При превышении значения имитируется перенос строки.
+     */
     public static final int LOGCAT_BUFFER_SIZE = 3000;
 
+    private Lg() {
+    }
+
+    /**
+     * Проверяет включено ли логгирование.
+     *
+     * @return Boolean
+     */
     private static boolean shouldLog() {
-//        return BuildConfig.IS_LOGCAT_LOGGER_ENABLED;
-//        return true;
-        return false;
+        // TODO: Раскомментировать когда будет доступен класс с конфигом
+        // return BuildConfig.IS_LOGCAT_LOGGER_ENABLED;
+        return true;
     }
 
-    public static void i(String tag, String text) {
+    /**
+     * Отправляет в лог сообщение с уровнем {@link android.util.Log#VERBOSE}.
+     *
+     * @param tag Используется для идентификации источника сообщения.
+     * @param msg Сообщение которое нужно залогировать.
+     */
+    public static void v(String tag, String msg) {
+        helper(Log.VERBOSE, tag, msg);
+    }
+
+    /**
+     * Отправляет в лог сообщение с уровнем {@link android.util.Log#DEBUG}.
+     *
+     * @param tag Используется для идентификации источника сообщения.
+     * @param msg Сообщение которое нужно залогировать.
+     */
+    public static void d(String tag, String msg) {
+        helper(Log.DEBUG, tag, msg);
+    }
+
+    /**
+     * Отправляет в лог сообщение с уровнем {@link android.util.Log#INFO}.
+     *
+     * @param tag Используется для идентификации источника сообщения.
+     * @param msg Сообщение которое нужно залогировать.
+     */
+    public static void i(String tag, String msg) {
+        helper(Log.INFO, tag, msg);
+    }
+
+    /**
+     * Отправляет в лог сообщение с уровнем {@link android.util.Log#WARN}.
+     *
+     * @param tag Используется для идентификации источника сообщения.
+     * @param msg Сообщение которое нужно залогировать.
+     */
+    public static void w(String tag, String msg) {
+        helper(Log.WARN, tag, msg);
+    }
+
+    /**
+     * Отправляет в лог сообщение с уровнем {@link android.util.Log#ERROR}.
+     *
+     * @param tag Используется для идентификации источника сообщения.
+     * @param msg Сообщение которое нужно залогировать.
+     */
+    public static void e(String tag, String msg) {
+        helper(Log.ERROR, tag, msg);
+    }
+
+    /**
+     * Отправляет в лог сообщение с уровнем {@link android.util.Log#ASSERT}.
+     *
+     * @param tag Используется для идентификации источника сообщения.
+     * @param msg Сообщение которое нужно залогировать.
+     */
+    public static void a(String tag, String msg) {
+        helper(Log.ASSERT, tag, msg);
+    }
+
+    /**
+     * Обертка для логгера.
+     * Выполняет задачи:
+     * – Проверка на необходимость логгирования (подробнее: {@link #shouldLog()}).
+     * – Форматирование вывода (подробнее: {@link #LOGCAT_BUFFER_SIZE}).
+     *
+     * @param level Константа определяющая приоритет логгируемого сообщения.
+     *              Используются константы из пакета {@link android.util.Log},
+     *              например {@link android.util.Log#VERBOSE}
+     * @param tag   Используется для идентификации источника сообщения.
+     * @param msg   Сообщение которое нужно залогировать.
+     */
+    private static void helper(Integer level, String tag, String msg) {
         if (shouldLog()) {
-            if (text.length() > LOGCAT_BUFFER_SIZE) {
-                String s = text;
-                while (s.length() > LOGCAT_BUFFER_SIZE) {
-                    String s1 = s.substring(0, LOGCAT_BUFFER_SIZE);
-                    s = s.substring(LOGCAT_BUFFER_SIZE);
-                    Log.i(PREFIX + tag, s1);
-                }
-                Log.i(PREFIX + tag, s);
-            } else {
-                Log.i(PREFIX + tag, text);
+            String str = msg;
+
+            while (str.length() > LOGCAT_BUFFER_SIZE) {
+                String substr = str.substring(0, LOGCAT_BUFFER_SIZE);
+                str = substr.substring(LOGCAT_BUFFER_SIZE);
+                log(level, PREFIX + tag, substr);
             }
+
+            log(level, PREFIX + tag, str);
         }
     }
 
-    public static void e(String tag, String text) {
-        if (shouldLog()) {
-            if (text.length() > LOGCAT_BUFFER_SIZE) {
-                String s = text;
-                while (s.length() > LOGCAT_BUFFER_SIZE) {
-                    String s1 = s.substring(0, LOGCAT_BUFFER_SIZE);
-                    s = s.substring(LOGCAT_BUFFER_SIZE);
-                    Log.e(PREFIX + tag, s1);
-                }
-                Log.e(PREFIX + tag, s);
-            } else {
-                Log.e(PREFIX + tag, text);
-            }
-        }
-    }
-
-    public static void w(String tag, String text) {
-        if (shouldLog()) {
-            if (text.length() > LOGCAT_BUFFER_SIZE) {
-                String s = text;
-                while (s.length() > LOGCAT_BUFFER_SIZE) {
-                    String s1 = s.substring(0, LOGCAT_BUFFER_SIZE);
-                    s = s.substring(LOGCAT_BUFFER_SIZE);
-                    Log.w(PREFIX + tag, s1);
-                }
-                Log.w(PREFIX + tag, s);
-            } else {
-                Log.w(PREFIX + tag, text);
-            }
+    /**
+     * Вызывает метод класса {@link android.util.Log} соответствующий уровню приоритета,
+     * например {@link android.util.Log#w(String, String)}.
+     *
+     * @param level Константа определяющая приоритет логгируемого сообщения.
+     *              Используются константы из пакета {@link android.util.Log},
+     *              например {@link android.util.Log#VERBOSE}
+     * @param tag   Используется для идентификации источника сообщения.
+     * @param msg   Сообщение которое нужно залогировать.
+     */
+    private static void log(Integer level, String tag, String msg) {
+        switch (level) {
+            case Log.VERBOSE:
+                Log.v(tag, msg);
+                break;
+            case Log.DEBUG:
+                Log.d(tag, msg);
+                break;
+            case Log.INFO:
+                Log.i(tag, msg);
+                break;
+            case Log.WARN:
+                Log.w(tag, msg);
+                break;
+            case Log.ERROR:
+                Log.e(tag, msg);
+                break;
+            case Log.ASSERT:
+                Log.println(Log.ASSERT, tag, msg);
+                break;
         }
     }
 }
-
-
